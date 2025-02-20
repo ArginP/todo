@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>To Do App</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+    <script src="script.js" defer type="module"></script>
+    <script src="helpers.js" defer type="module"></script>
 </head>
 <body>
 
@@ -20,6 +21,17 @@
 
     <section class="tasks-container" data-tasks-container></section>
 </main>
+
+<template data-task-template>
+    <div class="task">
+        <input type="checkbox" class="task-checkbox" data-task-checkbox>
+        <div class="task-info">
+            <p class="task-description" data-task-description></p>
+            <span class="task-created" data-task-time-created></span>
+        </div>
+        <button class="task-delete" data-task-delete>×</button>
+    </div>
+</template>
 
 </body>
 </html>
