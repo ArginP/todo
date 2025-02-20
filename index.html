@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>To Do App</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
+
+<header class="header">
+    <h1>To Do App</h1>
+</header>
+
+<main class="main">
+    <section class="add-task-container">
+        <input class="add-task-input" type="text" placeholder="Add a task" data-add-task-input>
+        <button class="add-task-btn" data-add-task-button>Add</button>
+    </section>
+
+    <section class="tasks-container" data-tasks-container></section>
+</main>
 
 </body>
 </html>
