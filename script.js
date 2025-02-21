@@ -13,7 +13,7 @@ const addTask = () => {
             id: Date.now(), // костыль псевдоуникального ID
             description: addTaskInput.value.trim(), // текст таски без пробелов с концов
             completed: false, // по-умолчанию не выполнено
-            createdAt: new Date(), // дата создания таски
+            createdAt: getTimeFormat(new Date()), // дата создания таски
         }
         tasks.push(task); // добавляем таску в конец массива тасок
         setLocalStorage(tasks); // записываем этот массив в localStorage
@@ -40,7 +40,7 @@ const createTaskLayout = (task) => {
     taskDescription.textContent = task.description; // описание таски берется из значения description в объекте таски
 
     const taskTimeCreated = taskItem.querySelector('[data-task-time-created]');
-    taskTimeCreated.textContent = getTimeFormat(task.createdAt); // дата создания берется их значения createdAt
+    taskTimeCreated.textContent = task.createdAt; // дата создания берется их значения createdAt
     // getTimeFormat() приводит формат отображаемого времени к интернациональному стандарту, см. helpers.js
 
     const taskDelete = taskItem.querySelector('[data-task-delete]');
