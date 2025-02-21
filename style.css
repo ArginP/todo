@@ -49,4 +49,63 @@ body {
   padding: 0 15px;
 }
 
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto 30px auto;
+  gap: 15px;
+}
+.tasks-container .task {
+  height: 60px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #e0e4bd;
+  box-shadow: 0 0 15px 3px rgba(0, 0, 0, 0.3333333333);
+}
+.tasks-container .task-checkbox {
+  accent-color: #3bd86a;
+  width: 25px;
+  height: 25px;
+}
+.tasks-container .task-checkbox:checked ~ .task-info {
+  text-decoration: line-through;
+}
+.tasks-container .task-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin: 0;
+}
+.tasks-container .task-description {
+  margin: 0 0 3px 0;
+}
+.tasks-container .task-created {
+  font-size: 12px;
+  font-style: italic;
+}
+.tasks-container .task-delete {
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px 10px 7px 10px;
+  background-color: #b83d3d;
+  font-size: 20px;
+}
+.tasks-container .task-delete:disabled {
+  background-color: #b79999;
+  cursor: not-allowed;
+}
+.tasks-container .task:has(.task-checkbox:checked) {
+  background-color: #6acb8e;
+}
+
 /*# sourceMappingURL=style.css.map */
