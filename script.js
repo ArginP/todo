@@ -1,4 +1,4 @@
-import { setLocalStorage, getLocalStorage } from "./helpers.js";
+import { setLocalStorage, getLocalStorage, getTimeFormat, debounce } from "./helpers.js";
 
 const addTaskInput = document.querySelector('[data-add-task-input]');
 const addTaskButton = document.querySelector('[data-add-task-button]');
@@ -16,8 +16,8 @@ const addTask = () => {
             createdAt: new Date(), // дата создания таски
         }
         tasks.push(task); // добавляем таску в конец массива тасок
-        setLocalStorage(tasks); // записываем этот массив в LocalStorage
-        addTaskInput.value = ''; // очищаем поле вввода
+        setLocalStorage(tasks); // записываем этот массив в localStorage
+        addTaskInput.value = ''; // очищаем поле ввода
         renderTasks(); // отрисовываем текущий массив тасок
     }
 }
@@ -40,11 +40,38 @@ const createTaskLayout = (task) => {
     taskDescription.textContent = task.description; // описание таски берется из значения description в объекте таски
 
     const taskTimeCreated = taskItem.querySelector('[data-task-time-created]');
-    taskTimeCreated.textContent = task.createdAt; // дата создания берется их значения createdAt
+    taskTimeCreated.textContent = getTimeFormat(task.createdAt); // дата создания берется их значения createdAt
+    // getTimeFormat() приводит формат отображаемого времени к интернациональному стандарту, см. helpers.js
 
     const taskDelete = taskItem.querySelector('[data-task-delete]');
     taskDelete.disabled = !task.completed;
     // кнопка удалить заблокирована, пока таска не помечена как выполненная в значении completed объекта таски
+
+    // отслеживаем ивент изменения состояния checked галочки
+    taskCheckbox.addEventListener('change', (event) => {
+        tasks = tasks.map((t) => {
+            // метод, который применяет колбэк функцию к элементам массива, и создает новый, измененный, массив
+            if (t.id === task.id) { // находит нужную таску по ID
+                t.completed = event.target.checked; // присваивает .checked = true в объекте таски
+            }
+            return t; // возвращает измененную таску
+        });
+        setLocalStorage(tasks); // записывает таски в localStorage
+        renderTasks(); // отрисовывает таски
+    })
+
+    // отслеживаем клик по кнопке удалить таску
+    taskDelete.addEventListener('click', () => {
+        tasks = tasks.filter((t) => {
+            // метод, который фильтрует массива на основании параметров, заданных колбеком
+            if (t.id !== task.id) { // фильтруем по ID т.о., чтобы фильтр прошли все таски, кроме удаляемой
+                return t; // возвращает все элементы массива, ID которых НЕ СООТВЕТСТВУЕТ ID удаляемой таски
+            }
+
+        });
+        setLocalStorage(tasks); // записывает таски в localStorage
+        renderTasks(); // отрисовывает таски
+    })
 
     return taskItem;
 }
@@ -52,8 +79,32 @@ const createTaskLayout = (task) => {
 const renderTasks = () => {
     tasksContainer.innerHTML = ''; // очищает контейнер тасок
 
+    if (tasks.length === 0) { // если массив тасок пуст, то
+        tasksContainer.innerHTML = '<h3>No tasks yet.</h3>'; // выведет эту HTML-разметку
+        return; // остановит дальнейшее выполнение кода функции
+    }
+
     tasks.forEach((task) => { // для каждой таски в массиве тасок
         const taskItem = createTaskLayout(task); // для каждого объекта таски выполняется функция
         tasksContainer.append(taskItem) // выводит таску на страницу
     })
 }
+
+renderTasks(); // вызываем функцию рендера, чтобы при первоначальной загрузке страницы таски отрисовались
+
+
+//36:00
+
+/*
+const search = () => {
+    const searchInput = document.querySelector("");
+
+    const debouncedSearch = debounce((event) => {
+
+        });
+    }, 600); // здесь передается кастомное время задержки дебаунсера
+
+    searchInput.addEventListener("input", debouncedSearch);
+    // по событию ввода в окно поиска, будет осуществляться функция debouncedSearch
+};
+*/
