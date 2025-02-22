@@ -2,11 +2,14 @@ import { setLocalStorage, getLocalStorage, getTimeFormat, debounce } from "./hel
 
 const addTaskInput = document.querySelector('[data-add-task-input]');
 const addTaskButton = document.querySelector('[data-add-task-button]');
+const searchInput = document.querySelector('[data-search-input]');
 const tasksContainer = document.querySelector('[data-tasks-container]');
 const taskTemplate = document.querySelector('[data-task-template]');
 
 let tasks = getLocalStorage();
+let filteredTasks = [];
 
+// --- логика создания новой таски ---
 const addTask = () => {
     if (addTaskInput.value.trim()) { // проверяет что поле текста таски не пустое
         const task = { // задаем объект таски
@@ -18,10 +21,11 @@ const addTask = () => {
         tasks.push(task); // добавляем таску в конец массива тасок
         setLocalStorage(tasks); // записываем этот массив в localStorage
         addTaskInput.value = ''; // очищаем поле ввода
-        renderTasks(); // отрисовываем текущий массив тасок
+        renderTasks(); // отрисовывает текущий массив тасок
     }
 }
 
+// --- обработчики событий добавления новой таски ---
 addTaskButton.addEventListener('click', addTask) // обработчик по клику на кнопку
 addTaskInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') { // обработчик по нажатию клавиши Enter
@@ -29,6 +33,35 @@ addTaskInput.addEventListener('keydown', (event) => {
     }
 })
 
+// --- обработчик ввода в поле поиска и логика фильтрования тасок под поиск ---
+searchInput.addEventListener('input', (event) => { // обработчик по вводу в поле поиска
+    // const searchValue = event.target.value.toLowerCase().trim(); // введенное значение
+
+    debouncedSearch(event.target.value.toLowerCase().trim());
+})
+
+// --- поиск без задержки, срабатывает при нажатии кнопок ---
+const search = (searchValue) => {
+    filteredTasks = tasks.filter((t) => {
+        // отфильтровываем массив тасок, и передаем подходящие значения в массив filteredTasks, хранящийся в памяти вкладки
+        return t.description.toLowerCase().includes(searchValue) // возвращаем таски, подходящие под ключ поиска
+    });
+
+    renderFilteredTasks(); // отрисовывает отфильтрованные таски
+}
+
+// --- дебаунс поиск, срабатывает при вводе в поле поиска ---
+const debouncedSearch = debounce((searchValue) => {
+    filteredTasks = tasks.filter((t) => {
+        // отфильтровываем массив тасок, и передаем подходящие значения в массив filteredTasks, хранящийся в памяти вкладки
+        return t.description.toLowerCase().includes(searchValue) // возвращаем таски, подходящие под ключ поиска
+    });
+
+    renderFilteredTasks(); // отрисовывает отфильтрованные таски
+});
+
+
+// --- генерация динамической HTML разметки под таски ---
 const createTaskLayout = (task) => {
     const taskItem = document.importNode(taskTemplate.content, true);
     // получаем HTML нод из темплейта, true = с вложениями
@@ -50,14 +83,19 @@ const createTaskLayout = (task) => {
     // отслеживаем ивент изменения состояния checked галочки
     taskCheckbox.addEventListener('change', (event) => {
         tasks = tasks.map((t) => {
-            // метод, который применяет колбэк функцию к элементам массива, и создает новый, измененный, массив
+            // метод, который применяет колбек функцию к элементам массива, и создает новый, измененный, массив
             if (t.id === task.id) { // находит нужную таску по ID
                 t.completed = event.target.checked; // присваивает .checked = true в объекте таски
             }
             return t; // возвращает измененную таску
         });
         setLocalStorage(tasks); // записывает таски в localStorage
-        renderTasks(); // отрисовывает таски
+
+        if (searchInput.value.trim()) { // если в окне поиска что-то введено
+            search(searchInput.value.toLowerCase().trim()); // отрисовывает таски по фильтру
+        } else {
+            renderTasks(); // отрисовывает все таски
+        }
     })
 
     // отслеживаем клик по кнопке удалить таску
@@ -70,12 +108,18 @@ const createTaskLayout = (task) => {
 
         });
         setLocalStorage(tasks); // записывает таски в localStorage
-        renderTasks(); // отрисовывает таски
+
+        if (searchInput.value.trim()) { // если в окне поиска что-то введено
+            search(searchInput.value.toLowerCase().trim()); // отрисовывает таски по фильтру
+        } else {
+            renderTasks(); // отрисовывает все таски
+        }
     })
 
     return taskItem;
 }
 
+// --- отрисовка тасок ---
 const renderTasks = () => {
     tasksContainer.innerHTML = ''; // очищает контейнер тасок
 
@@ -92,19 +136,17 @@ const renderTasks = () => {
 
 renderTasks(); // вызываем функцию рендера, чтобы при первоначальной загрузке страницы таски отрисовались
 
+// --- отрисовка отфильтрованных тасок ---
+const renderFilteredTasks = () => {
+    tasksContainer.innerHTML = ''; // очищает контейнер тасок
 
-//36:00
+    if (filteredTasks.length === 0) { // если массив отфильтрованных тасок пуст, то
+        tasksContainer.innerHTML = '<h3>No tasks found.</h3>'; // выведет эту HTML-разметку
+        return; // остановит дальнейшее выполнение кода функции
+    }
 
-/*
-const search = () => {
-    const searchInput = document.querySelector("");
-
-    const debouncedSearch = debounce((event) => {
-
-        });
-    }, 600); // здесь передается кастомное время задержки дебаунсера
-
-    searchInput.addEventListener("input", debouncedSearch);
-    // по событию ввода в окно поиска, будет осуществляться функция debouncedSearch
-};
-*/
+    filteredTasks.forEach((task) => { // для каждой таски в массиве тасок
+        const taskItem = createTaskLayout(task); // для каждого объекта таски выполняется функция
+        tasksContainer.append(taskItem) // выводит таску на страницу
+    })
+}

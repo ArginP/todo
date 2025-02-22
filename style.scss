@@ -25,7 +25,8 @@ body {
   }
 }
 
-.add-task-container {
+.add-task-container,
+.search-container {
   width: 100%;
   max-width: 600px;
   display: flex;
@@ -36,19 +37,19 @@ body {
   align-items: stretch;
   gap: 10px;
 
-  .add-task-btn {
+  &-input {
+    border: none;
+    font-size: 24px;
+    flex-grow: 3;
+    padding: 0 15px;
+  }
+
+  &-btn {
     font-size: 20px;
     flex-grow: 1;
     user-select: none;
+    width: 60px;
   }
-}
-
-.add-task-input,
-.search-input {
-  border: none;
-  font-size: 24px;
-  flex-grow: 3;
-  padding: 0 15px;
 }
 
 .tasks-container {
