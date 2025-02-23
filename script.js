@@ -5,6 +5,7 @@ const addTaskButton = document.querySelector('[data-add-task-button]');
 const searchInput = document.querySelector('[data-search-input]');
 const tasksContainer = document.querySelector('[data-tasks-container]');
 const taskTemplate = document.querySelector('[data-task-template]');
+const clearSearchInputBtn = document.querySelector('[data-search-btn]');
 
 let tasks = getLocalStorage();
 let filteredTasks = [];
@@ -34,16 +35,11 @@ addTaskInput.addEventListener('keydown', (event) => {
     }
 })
 
-// --- обработчик ввода в поле поиска ---
-searchInput.addEventListener('input', (event) => {
-    debouncedSearch(event.target.value.toLowerCase().trim());
-})
-
 // --- поиск без задержки, срабатывает при нажатии кнопок ---
 const search = (searchValue) => {
     filteredTasks = tasks.filter((t) => {
         // отфильтровывает массив тасок, и передает подходящие значения в массив filteredTasks, хранящийся в памяти вкладки
-        return t.description.toLowerCase().includes(searchValue) // возвращает таски, подходящие под ключ поиска
+        return t.description.toLowerCase().includes(searchValue); // возвращает таски, подходящие под ключ поиска
     });
 
     renderFilteredTasks(); // отрисовывает отфильтрованные таски
@@ -52,8 +48,18 @@ const search = (searchValue) => {
 // --- дебаунс поиск, срабатывает при вводе в поле поиска ---
 const debouncedSearch = debounce((searchValue) => {
     search(searchValue);
-});
+})
 
+// --- обработчик ввода в поле поиска ---
+searchInput.addEventListener('input', (event) => {
+    debouncedSearch(event.target.value.toLowerCase().trim());
+})
+
+// --- обработчик кноки очистки поля поиска ---
+clearSearchInputBtn.addEventListener('click', () => {
+    searchInput.value = ''; // очищает поле поиска
+    renderTasks(); // отрисовывает все таски
+})
 
 // --- генерация динамической HTML разметки под таски ---
 const createTaskLayout = (task) => {
