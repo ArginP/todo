@@ -6,6 +6,7 @@ const searchInput = document.querySelector('[data-search-input]');
 const tasksContainer = document.querySelector('[data-tasks-container]');
 const taskTemplate = document.querySelector('[data-task-template]');
 const clearSearchInputBtn = document.querySelector('[data-search-btn]');
+const taskCountVidget = document.querySelector('[data-task-count]');
 
 let tasks = getLocalStorage();
 let filteredTasks = [];
@@ -23,6 +24,7 @@ const addTask = () => {
         setLocalStorage(tasks); // записывает этот массив в localStorage
         addTaskInput.value = ''; // очищает поле ввода
 
+        countTasks();
         whichRenderTasks();
     }
 }
@@ -55,11 +57,20 @@ searchInput.addEventListener('input', (event) => {
     debouncedSearch(event.target.value.toLowerCase().trim());
 })
 
-// --- обработчик кноки очистки поля поиска ---
+// --- обработчик кнопки очистки поля поиска ---
 clearSearchInputBtn.addEventListener('click', () => {
     searchInput.value = ''; // очищает поле поиска
     renderTasks(); // отрисовывает все таски
 })
+
+// --- логика счетчика тасок ---
+const countTasks = () => {
+    let finishedTasks = tasks.filter((t) => { // фильтруем массив тасок, вытягиваем .completed = true
+        return t.completed;
+    })
+    // Вписываем актуальную информацию в блок текста счетчика тасок
+    taskCountVidget.innerText = `Completed: ${finishedTasks.length}/${tasks.length}`;
+}
 
 // --- генерация динамической HTML разметки под таски ---
 const createTaskLayout = (task) => {
@@ -91,6 +102,7 @@ const createTaskLayout = (task) => {
         });
         setLocalStorage(tasks); // записывает таски в localStorage
 
+        countTasks();
         whichRenderTasks();
     })
 
@@ -105,6 +117,7 @@ const createTaskLayout = (task) => {
         });
         setLocalStorage(tasks); // записывает таски в localStorage
 
+        countTasks();
         whichRenderTasks();
     })
 
@@ -150,4 +163,5 @@ const whichRenderTasks = () => {
     }
 }
 
-whichRenderTasks(); // вызывает функцию рендера, чтобы при первоначальной загрузке страницы таски отрисовались
+countTasks(); // отрисовать интерфейс при первоначальной загрузке страницы
+whichRenderTasks();

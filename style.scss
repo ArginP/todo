@@ -52,6 +52,23 @@ body {
   }
 }
 
+.task-count-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 10px;
+  margin: 10px auto;
+  padding: 0 15px;
+  width: 100%;
+  max-width: 600px;
+
+  .task-count {
+    font-size: 20px;
+    user-select: none;
+    padding: 0 25px;
+  }
+}
+
 .tasks-container {
   display: flex;
   flex-direction: column;
