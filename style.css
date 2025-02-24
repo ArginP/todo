@@ -25,30 +25,34 @@ body {
 }
 
 .add-task-container,
-.search-container {
+.search-container,
+.delete-all-container {
   width: 100%;
   max-width: 600px;
   display: flex;
   height: 50px;
-  margin: 30px auto;
+  margin: 10px auto;
   padding: 0 10px;
   justify-content: flex-start;
   align-items: stretch;
   gap: 10px;
 }
 .add-task-container-input,
-.search-container-input {
+.search-container-input,
+.delete-all-container-input {
   border: none;
   font-size: 24px;
   flex-grow: 3;
   padding: 0 15px;
 }
 .add-task-container-btn,
-.search-container-btn {
+.search-container-btn,
+.delete-all-container-btn {
   font-size: 20px;
   flex-grow: 1;
   user-select: none;
   width: 60px;
+  cursor: pointer;
 }
 
 .task-count-container {
@@ -91,6 +95,7 @@ body {
   accent-color: #3bd86a;
   width: 25px;
   height: 25px;
+  cursor: pointer;
 }
 .tasks-container .task-checkbox:checked ~ .task-info {
   text-decoration: line-through;

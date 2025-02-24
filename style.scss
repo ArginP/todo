@@ -26,12 +26,13 @@ body {
 }
 
 .add-task-container,
-.search-container {
+.search-container,
+.delete-all-container {
   width: 100%;
   max-width: 600px;
   display: flex;
   height: 50px;
-  margin: 30px auto;
+  margin: 10px auto;
   padding: 0 10px;
   justify-content: flex-start;
   align-items: stretch;
@@ -49,6 +50,7 @@ body {
     flex-grow: 1;
     user-select: none;
     width: 60px;
+    cursor: pointer;
   }
 }
 
@@ -93,6 +95,7 @@ body {
       accent-color: #3bd86a; // задает цвет внутри прожатой галочки
       width: 25px;
       height: 25px;
+      cursor: pointer;
 
       &:checked ~ .task-info { // когда .task-checkbox:checked отправляет стиль в лежащий рядом элемент .task-info
         text-decoration: line-through;

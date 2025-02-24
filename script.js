@@ -6,7 +6,8 @@ const searchInput = document.querySelector('[data-search-input]');
 const tasksContainer = document.querySelector('[data-tasks-container]');
 const taskTemplate = document.querySelector('[data-task-template]');
 const clearSearchInputBtn = document.querySelector('[data-search-btn]');
-const taskCountVidget = document.querySelector('[data-task-count]');
+const taskCountWidget = document.querySelector('[data-task-count]');
+const deleteAllTasksBtn = document.querySelector('[data-delete-all-btn]');
 
 let tasks = getLocalStorage();
 let filteredTasks = [];
@@ -63,13 +64,27 @@ clearSearchInputBtn.addEventListener('click', () => {
     renderTasks(); // отрисовывает все таски
 })
 
+// --- обработчик кнопки удалить все выполненные таски ---
+deleteAllTasksBtn.addEventListener('click', () => {
+    tasks = tasks.filter((t) => {
+        // метод, который фильтрует массива на основании параметров, заданных колбеком
+        if (!t.completed) {
+            return t; // возвращает все таски, у которых .completed = false
+        }
+    });
+    setLocalStorage(tasks); // перезаписывает таски в localStorage за исключением выполненных
+
+    countTasks();
+    whichRenderTasks();
+})
+
 // --- логика счетчика тасок ---
 const countTasks = () => {
     let finishedTasks = tasks.filter((t) => { // фильтруем массив тасок, вытягиваем .completed = true
         return t.completed;
     })
     // Вписываем актуальную информацию в блок текста счетчика тасок
-    taskCountVidget.innerText = `Completed: ${finishedTasks.length}/${tasks.length}`;
+    taskCountWidget.innerText = `Completed: ${finishedTasks.length}/${tasks.length}`;
 }
 
 // --- генерация динамической HTML разметки под таски ---
