@@ -138,5 +138,11 @@ body {
     &:has(.task-checkbox:checked) { // псевдокласс :has проверяет, что .task-checkbox:checked
       background-color: #6acb8e;
     }
+
+    &.deleted {
+      transition: opacity;
+      transition-duration: 0.4s;
+      opacity: 0;
+    }
   }
 }

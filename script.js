@@ -1,4 +1,4 @@
-import { setLocalStorage, getLocalStorage, getTimeFormat, debounce } from "./helpers.js";
+import {setLocalStorage, getLocalStorage, getTimeFormat, debounce} from "./helpers.js";
 
 const addTaskInput = document.querySelector('[data-add-task-input]');
 const addTaskButton = document.querySelector('[data-add-task-button]');
@@ -12,7 +12,7 @@ const deleteAllTasksBtn = document.querySelector('[data-delete-all-btn]');
 let tasks = getLocalStorage();
 let filteredTasks = [];
 
-// --- логика создания новой таски ---
+// --- Логика создания новой таски ---
 const addTask = () => {
     if (addTaskInput.value.trim()) { // проверяет что поле текста таски не пустое
         const task = { // задает объект таски
@@ -20,7 +20,9 @@ const addTask = () => {
             description: addTaskInput.value.trim(), // текст таски без пробелов с концов
             completed: false, // по-умолчанию не выполнено
             createdAt: getTimeFormat(new Date()), // дата создания таски
+            // getTimeFormat() приводит формат отображаемого времени к интернациональному стандарту, см. helpers.js
         }
+
         tasks.push(task); // добавляет таску в конец массива тасок
         setLocalStorage(tasks); // записывает этот массив в localStorage
         addTaskInput.value = ''; // очищает поле ввода
@@ -30,7 +32,7 @@ const addTask = () => {
     }
 }
 
-// --- обработчики событий добавления новой таски ---
+// --- Обработчики событий добавления новой таски ---
 addTaskButton.addEventListener('click', addTask) // обработчик по клику на кнопку
 addTaskInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') { // обработчик по нажатию клавиши Enter
@@ -38,7 +40,7 @@ addTaskInput.addEventListener('keydown', (event) => {
     }
 })
 
-// --- поиск без задержки, срабатывает при нажатии кнопок ---
+// --- Поиск без задержки, срабатывает при нажатии кнопок ---
 const search = (searchValue) => {
     filteredTasks = tasks.filter((t) => {
         // отфильтровывает массив тасок, и передает подходящие значения в массив filteredTasks, хранящийся в памяти вкладки
@@ -48,46 +50,49 @@ const search = (searchValue) => {
     renderFilteredTasks(); // отрисовывает отфильтрованные таски
 }
 
-// --- дебаунс поиск, срабатывает при вводе в поле поиска ---
+// --- Дебаунс поиск, срабатывает при вводе в поле поиска ---
 const debouncedSearch = debounce((searchValue) => {
     search(searchValue);
 })
 
-// --- обработчик ввода в поле поиска ---
+// --- Обработчик ввода в поле поиска ---
 searchInput.addEventListener('input', (event) => {
     debouncedSearch(event.target.value.toLowerCase().trim());
 })
 
-// --- обработчик кнопки очистки поля поиска ---
+// --- Обработчик кнопки очистки поля поиска ---
 clearSearchInputBtn.addEventListener('click', () => {
     searchInput.value = ''; // очищает поле поиска
     renderTasks(); // отрисовывает все таски
 })
 
-// --- обработчик кнопки удалить все выполненные таски ---
+// --- Обработчик кнопки удалить все выполненные таски ---
 deleteAllTasksBtn.addEventListener('click', () => {
     tasks = tasks.filter((t) => {
-        // метод, который фильтрует массива на основании параметров, заданных колбеком
-        if (!t.completed) {
-            return t; // возвращает все таски, у которых .completed = false
+        if (t.completed === true) { // если таска в массиве помечена как "выполненная", присваивает ей стиль
+            return document.querySelector(`.${CSS.escape(t.id)}`).classList.add('deleted');
+        } else { // если нет, то возвращает ее в новый массив
+            return t;
         }
     });
+
     setLocalStorage(tasks); // перезаписывает таски в localStorage за исключением выполненных
 
     countTasks();
-    whichRenderTasks();
+    setTimeout(whichRenderTasks, 400); // дает время проиграться анимации удаления, потом отрисовывает таски
 })
 
-// --- логика счетчика тасок ---
+// --- Логика счетчика тасок ---
 const countTasks = () => {
-    let finishedTasks = tasks.filter((t) => { // фильтруем массив тасок, вытягиваем .completed = true
+    let finishedTasks = tasks.filter((t) => { // фильтрует массив тасок, вытягивает .completed = true
         return t.completed;
     })
-    // Вписываем актуальную информацию в блок текста счетчика тасок
+
     taskCountWidget.innerText = `Completed: ${finishedTasks.length}/${tasks.length}`;
+    // вписывает актуальную информацию в блок текста счетчика тасок
 }
 
-// --- генерация динамической HTML разметки под таски ---
+// --- Генерация динамической HTML разметки под таски ---
 const createTaskLayout = (task) => {
     const taskItem = document.importNode(taskTemplate.content, true);
     // получает HTML нод из темплейта, true = с вложениями
@@ -100,7 +105,6 @@ const createTaskLayout = (task) => {
 
     const taskTimeCreated = taskItem.querySelector('[data-task-time-created]');
     taskTimeCreated.textContent = task.createdAt; // дата создания берется их значения createdAt
-    // getTimeFormat() приводит формат отображаемого времени к интернациональному стандарту, см. helpers.js
 
     const taskDelete = taskItem.querySelector('[data-task-delete]');
     taskDelete.disabled = !task.completed;
@@ -115,6 +119,7 @@ const createTaskLayout = (task) => {
             }
             return t; // возвращает измененную таску
         });
+
         setLocalStorage(tasks); // записывает таски в localStorage
 
         countTasks();
@@ -123,23 +128,25 @@ const createTaskLayout = (task) => {
 
     // отслеживает клик по кнопке удалить таску
     taskDelete.addEventListener('click', () => {
+        document.querySelector(`.${CSS.escape(task.id)}`).classList.add('deleted');
+        // по добавленному классу c ID таски находит удаляемый элемент, и присваивает ему класс
         tasks = tasks.filter((t) => {
             // метод, который фильтрует массива на основании параметров, заданных колбеком
             if (t.id !== task.id) { // фильтрует по ID т.о., чтобы фильтр прошли все таски, кроме удаляемой
                 return t; // возвращает все элементы массива, ID которых НЕ СООТВЕТСТВУЕТ ID удаляемой таски
             }
-
         });
+
         setLocalStorage(tasks); // записывает таски в localStorage
 
         countTasks();
-        whichRenderTasks();
+        setTimeout(whichRenderTasks, 400); // дает время проиграться анимации удаления, потом отрисовывает таски
     })
 
     return taskItem;
 }
 
-// --- отрисовка тасок ---
+// --- Отрисовка тасок ---
 const renderTasks = () => {
     tasksContainer.innerHTML = ''; // очищает контейнер тасок
 
@@ -151,10 +158,12 @@ const renderTasks = () => {
     tasks.forEach((task) => { // для каждой таски в массиве тасок
         const taskItem = createTaskLayout(task); // для каждого объекта таски выполняется функция
         tasksContainer.append(taskItem) // выводит таску на страницу
+        document.querySelector('.tasks-container').lastElementChild.classList.add(task.id);
+        // для каждого сгенерированного элемента таски присваивает класс в виде его ID
     })
 }
 
-// --- отрисовка отфильтрованных тасок ---
+// --- Отрисовка отфильтрованных тасок ---
 const renderFilteredTasks = () => {
     tasksContainer.innerHTML = ''; // очищает контейнер тасок
 
@@ -166,10 +175,12 @@ const renderFilteredTasks = () => {
     filteredTasks.forEach((task) => { // для каждой таски в массиве тасок
         const taskItem = createTaskLayout(task); // для каждого объекта таски выполняется функция
         tasksContainer.append(taskItem) // выводит таску на страницу
+        document.querySelector('.tasks-container').lastElementChild.classList.add(task.id);
+        // для каждого сгенерированного элемента таски присваивает класс в виде его ID
     })
 }
 
-// --- какой рендер использовать, для всех тасок, или фильтрованных? ---
+// --- Какой рендер использовать, для всех тасок, или фильтрованных? ---
 const whichRenderTasks = () => {
     if (searchInput.value.trim()) { // если в окне поиска что-то введено
         search(searchInput.value.toLowerCase().trim()); // отрисовывает таски по фильтру

@@ -4,9 +4,9 @@ Practice project
 
 ## Использованные стеки технологий:
 
-- HTML / HTML templating
+- HTML / HTML Templating
 - SCSS
-- JavaScript / native JS modules
+- JavaScript / Native JS Modules / Async Functions
 
 ## Реализованный функционал:
 
@@ -22,3 +22,4 @@ Practice project
 - Независимая работа фильтра по поиску и всей остальной логики
 - Счетчик количества задач, и сколько из них выполнено
 - Кнопка удалить все выполненные задачи
+- Асинхронное выполнение скриптов удаления задач для плавной анимации

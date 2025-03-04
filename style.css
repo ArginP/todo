@@ -130,5 +130,10 @@ body {
 .tasks-container .task:has(.task-checkbox:checked) {
   background-color: #6acb8e;
 }
+.tasks-container .task.deleted {
+  transition: opacity;
+  transition-duration: 0.4s;
+  opacity: 0;
+}
 
 /*# sourceMappingURL=style.css.map */
